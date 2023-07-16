@@ -1,0 +1,50 @@
+environments: 
+  default:
+    values:
+      - auth: 
+          github_api_token: ref+awssecrets://my_infra/slack-pr-vigilante#/GITHUB_API_TOKEN
+          slack_api_token: ref+awssecrets://my_infra/slack-pr-vigilante#/SLACK_API_TOKEN
+
+helmDefaults:
+  wait: true
+
+releases:
+  - chart: ./charts/pr-vigilante
+    version: 0.6.0
+    name: pr-vigilante
+    namespace: slack-tools
+    createNamespace: true
+    values:
+      - persistence:
+          enabled: true
+          cacheDirPath: ./app/cache
+          accessModes:
+            - ReadWriteOnce
+          storageClassName: "ebs-gp3"
+          size: 1Gi
+      - extraEnv:
+          - name: "CACHE_FOLDER_PATH"
+            value: "./cache"
+          - name: "SLACK_API_TOKEN" 
+            value: {{ .Values.auth.slack_api_token }}
+          - name: "GITHUB_API_TOKEN"
+            value: {{ .Values.auth.github_api_token }}
+          - name: "SLACK_CHANNEL_ID"
+            value: "G01U3QFNK5J"
+          - name: "SLACK_APPROVED_REACTION_NAME"
+            value: "github-approved"
+          - name: "SLACK_MERGED_REACTION_NAME"
+            value: "merged"
+          - name: "SLACK_GITHUB_ERROR_REACTION_NAME"
+            value: "sadpepe"
+          # 8 hours sliding window
+          - name: "SLACK_TIME_WINDOW_MINUTES"
+            value: "480"
+          - name: "SLEEP_PERIOD_MINUTES"
+            value: "1"
+          - name: "MAX_CLIENT_RETRIES"
+            value: "5"
+      - resources:
+          requests:
+            cpu: 200m
+            memory: 200Mi

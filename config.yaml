@@ -1,0 +1,16 @@
+
+# max_client_retries:
+# sleep_period_minutes:
+# cache_folder_path: "./cache"
+# dry_run:
+# debug:
+
+# slack_api_token:
+# slack_channel_id:
+# slack_time_window_seconds:
+
+# slack_approved_reaction_name: white_check_mark
+# slack_merged_reaction_name: merged
+# slack_github_error_reaction_name: sadpepe
+
+# github_api_token:
